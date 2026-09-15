@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test nhạc • Ngày Đầu Tiên</title>
+<style>
+html,body{margin:0;min-height:100%;background:#080511;color:#fff;font-family:system-ui,sans-serif}body{display:grid;place-items:center;min-height:100svh;overflow:hidden}.box{text-align:center;padding:30px;max-width:420px}.moon{font-size:72px;margin-bottom:12px}.box h1{font-family:Georgia,serif;font-size:34px;margin:0 0 12px}.box p{color:#cfc5d8;line-height:1.6}.open{border:0;border-radius:999px;padding:15px 25px;font-weight:800;font-size:16px;background:linear-gradient(135deg,#ffd3eb,#ff98cf);color:#32162e;cursor:pointer}.music{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="box">
+<div class="moon">🌙</div>
+<h1>Test nhạc cho thiệp</h1>
+<p>Bấm nút bên dưới. Nhạc <b>“Ngày Đầu Tiên” – Đức Phúc</b> sẽ được mở bằng trình phát YouTube chính thức.</p>
+<button class="open" id="open">Mở thiệp 🌙</button>
+</div>
+<div class="music" id="music"></div>
+<script>
+const btn=document.getElementById('open');
+btn.addEventListener('click',()=>{
+ document.getElementById('music').innerHTML='<iframe width="1" height="1" src="https://www.youtube.com/embed/rIXhXaQ8tiM?autoplay=1&loop=1&playlist=rIXhXaQ8tiM&controls=0&playsinline=1" title="Ngày Đầu Tiên - Đức Phúc" allow="autoplay; encrypted-media" frameborder="0"></iframe>';
+ btn.textContent='♪ Đang phát';
+});
+</script>
+</body>
+</html>
