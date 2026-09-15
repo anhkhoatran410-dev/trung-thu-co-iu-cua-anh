@@ -1,0 +1,55 @@
+name: Add music to card
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-card:
+    if: ${{ !contains(github.event.head_commit.message, '[auto-music]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<!-- AUTO MUSIC START -->'
+          if marker not in s:
+              patch = r'''<!-- AUTO MUSIC START -->
+          <audio id="bgm" preload="auto" loop src="music.mp3"></audio>
+          <script>
+          (function(){
+            const a=document.getElementById('bgm');
+            const b=document.getElementById('open');
+            const sb=document.getElementById('soundBtn');
+            const START=78;
+            let started=false;
+            function playMusic(){
+              if(started) return;
+              started=true;
+              try{a.currentTime=START;}catch(e){}
+              a.play().then(()=>{if(sb)sb.textContent='♫';}).catch(()=>{});
+            }
+            if(b) b.addEventListener('click', playMusic, {once:true});
+            if(sb) sb.addEventListener('click', ()=>{
+              if(!started){playMusic();return;}
+              if(a.paused){a.play().catch(()=>{});sb.textContent='♫';}
+              else{a.pause();sb.textContent='🔇';}
+            });
+          })();
+          </script>
+          <!-- AUTO MUSIC END -->'''
+              s = s.replace('</body>', patch + '\n</body>')
+              p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit patched card
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "[auto-music] Nối nhạc nền vào thiệp" && git push)
