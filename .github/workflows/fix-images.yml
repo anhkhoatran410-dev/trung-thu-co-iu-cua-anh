@@ -1,0 +1,35 @@
+name: Fix card images
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[auto-images]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch image slots
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          files={
+            'm1':'c_1000022566.jpg',
+            'm2':'c_1000022466.jpg',
+            'm3':'c_1000023124.jpg',
+          }
+          for cls, fn in files.items():
+              pat=r'(<div class="memory '+re.escape(cls)+r'"><img\s+src=")[^"]*("[^>]*>)'
+              s=re.sub(pat, rf'\1{fn}\2', s, count=1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "[auto-images] Gắn 3 ảnh kỷ niệm" && git push)
